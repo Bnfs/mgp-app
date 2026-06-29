@@ -23,6 +23,9 @@ export default function Dashboard() {
   // Vue active : 1 (Semestre 1), 2 (Semestre 2) ou 'annee' (les deux).
   const [vue, setVue] = useState(1)
 
+  // Semestre choisi dans le formulaire d'ajout (1 ou 2).
+  const [semAjout, setSemAjout] = useState(1)
+
   // Charge les matieres de l'utilisateur au montage.
   useEffect(() => {
     let actif = true
@@ -67,7 +70,7 @@ export default function Dashboard() {
     setSaving(true)
     const { data, error } = await supabase
       .from('matieres')
-      .insert({ nom: nom.trim(), credit: c, note: n, user_id: user.id, semestre: vue })
+      .insert({ nom: nom.trim(), credit: c, note: n, user_id: user.id, semestre: semAjout })
       .select()
       .single()
     setSaving(false)
@@ -77,6 +80,7 @@ export default function Dashboard() {
     setNom('')
     setCredit('')
     setNote('')
+    setVue(semAjout) // affiche le semestre ou la matiere vient d'etre ajoutee
   }
 
   function commencerEdition(m) {
@@ -153,15 +157,14 @@ export default function Dashboard() {
 
       <ResultatCard resultat={resultat} />
 
-      {/* Formulaire d'ajout (masque dans la vue annuelle) */}
-      {vue !== 'annee' && (
+      {/* Formulaire d'ajout : le semestre se choisit ici */}
       <div className="card shadow-sm mb-4">
         <div className="card-header bg-white fw-semibold">
-          ➕ Ajouter une matiere (UE) — Semestre {vue}
+          ➕ Ajouter une matiere (UE)
         </div>
         <div className="card-body">
           <form onSubmit={ajouterMatiere} className="row g-3 align-items-end">
-            <div className="col-12 col-md-5">
+            <div className="col-12 col-md-4">
               <label className="form-label">Nom de la matiere</label>
               <input
                 className="form-control"
@@ -170,7 +173,18 @@ export default function Dashboard() {
                 placeholder="Ex : Algorithmique"
               />
             </div>
-            <div className="col-6 col-md-3">
+            <div className="col-6 col-md-2">
+              <label className="form-label">Semestre</label>
+              <select
+                className="form-select"
+                value={semAjout}
+                onChange={(e) => setSemAjout(Number(e.target.value))}
+              >
+                <option value={1}>Semestre 1</option>
+                <option value={2}>Semestre 2</option>
+              </select>
+            </div>
+            <div className="col-6 col-md-2">
               <label className="form-label">Credit</label>
               <input
                 type="number"
@@ -195,7 +209,7 @@ export default function Dashboard() {
                 placeholder="Ex : 72"
               />
             </div>
-            <div className="col-12 col-md-2 d-grid">
+            <div className="col-6 col-md-2 d-grid">
               <button className="btn btn-primary" disabled={saving}>
                 {saving ? '...' : 'Ajouter'}
               </button>
@@ -203,7 +217,6 @@ export default function Dashboard() {
           </form>
         </div>
       </div>
-      )}
 
       {/* Tableau des matieres */}
       <div className="card shadow-sm">
