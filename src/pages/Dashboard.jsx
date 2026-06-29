@@ -184,7 +184,7 @@ export default function Dashboard() {
               Aucune matiere pour l'instant. Ajoute ta premiere UE ci-dessus.
             </p>
           ) : (
-            <div className="table-responsive">
+            <div className="table-responsive d-none d-md-block">
               <table className="table table-hover align-middle mb-0">
                 <thead className="table-light">
                   <tr>
@@ -304,6 +304,134 @@ export default function Dashboard() {
                   })}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Vue en cartes : affichee uniquement sur mobile (< md) */}
+          {!loading && matieres.length > 0 && (
+            <div className="d-md-none p-3">
+              {matieres.map((m) => {
+                const enEdition = editId === m.id
+                const g = getGrade(enEdition ? editVals.note : m.note)
+
+                if (enEdition) {
+                  return (
+                    <div
+                      key={m.id}
+                      className="border border-warning rounded p-3 mb-3 bg-warning-subtle"
+                    >
+                      <div className="mb-2">
+                        <label className="form-label small mb-1">Matiere</label>
+                        <input
+                          className="form-control form-control-sm"
+                          value={editVals.nom}
+                          onChange={(e) =>
+                            setEditVals((v) => ({ ...v, nom: e.target.value }))
+                          }
+                        />
+                      </div>
+                      <div className="row g-2 mb-2">
+                        <div className="col-6">
+                          <label className="form-label small mb-1">Credit</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.5"
+                            className="form-control form-control-sm"
+                            value={editVals.credit}
+                            onChange={(e) =>
+                              setEditVals((v) => ({ ...v, credit: e.target.value }))
+                            }
+                          />
+                        </div>
+                        <div className="col-6">
+                          <label className="form-label small mb-1">Note /100</label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            className="form-control form-control-sm"
+                            value={editVals.note}
+                            onChange={(e) =>
+                              setEditVals((v) => ({ ...v, note: e.target.value }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="small">
+                          Grade{' '}
+                          <span className={`badge bg-${gradeColor(g.points)}`}>
+                            {g.grade}
+                          </span>{' '}
+                          ({g.points.toFixed(2)})
+                        </span>
+                        <div className="text-nowrap">
+                          <button
+                            className="btn btn-sm btn-success me-1"
+                            onClick={() => enregistrerEdition(m.id)}
+                            disabled={saving}
+                          >
+                            ✓ Enregistrer
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={annulerEdition}
+                            disabled={saving}
+                          >
+                            ↩
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+
+                return (
+                  <div key={m.id} className="border rounded p-3 mb-3">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <h6 className="mb-0 fw-semibold">{m.nom}</h6>
+                      <span className={`badge bg-${gradeColor(g.points)} fs-6`}>
+                        {g.grade}
+                      </span>
+                    </div>
+                    <div className="row text-center small mb-2">
+                      <div className="col-4">
+                        <div className="text-muted">Crédit</div>
+                        {m.credit}
+                      </div>
+                      <div className="col-4">
+                        <div className="text-muted">Note</div>
+                        {m.note}/100
+                      </div>
+                      <div className="col-4">
+                        <div className="text-muted">Points</div>
+                        {g.points.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="small text-muted mb-2">
+                      Mention : {g.mention}
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm btn-outline-primary flex-fill"
+                        onClick={() => commencerEdition(m)}
+                        disabled={editId !== null}
+                      >
+                        ✎ Modifier
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger flex-fill"
+                        onClick={() => supprimerMatiere(m.id)}
+                        disabled={editId !== null}
+                      >
+                        ✕ Supprimer
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
