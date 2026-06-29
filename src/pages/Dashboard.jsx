@@ -189,15 +189,18 @@ export default function Dashboard() {
             </div>
             <div className="col-6 col-md-2">
               <label className="form-label">Credit</label>
-              <input
-                type="number"
-                min="0"
-                step="0.5"
-                className="form-control"
+              <select
+                className="form-select"
                 value={credit}
                 onChange={(e) => setCredit(e.target.value)}
-                placeholder="Ex : 4"
-              />
+              >
+                <option value="">-- choisir --</option>
+                {[1, 2, 3, 4, 5, 6].map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="col-6 col-md-2">
               <label className="form-label">Note /100</label>
@@ -276,16 +279,19 @@ export default function Dashboard() {
                             </td>
                           )}
                           <td className="text-center">
-                            <input
-                              type="number"
-                              min="0"
-                              step="0.5"
-                              className="form-control form-control-sm text-center"
+                            <select
+                              className="form-select form-select-sm"
                               value={editVals.credit}
                               onChange={(e) =>
                                 setEditVals((v) => ({ ...v, credit: e.target.value }))
                               }
-                            />
+                            >
+                              {[1, 2, 3, 4, 5, 6].map((v) => (
+                                <option key={v} value={v}>
+                                  {v}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="text-center">
                             <input
@@ -398,16 +404,19 @@ export default function Dashboard() {
                       <div className="row g-2 mb-2">
                         <div className="col-6">
                           <label className="form-label small mb-1">Credit</label>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            className="form-control form-control-sm"
+                          <select
+                            className="form-select form-select-sm"
                             value={editVals.credit}
                             onChange={(e) =>
                               setEditVals((v) => ({ ...v, credit: e.target.value }))
                             }
-                          />
+                          >
+                            {[1, 2, 3, 4, 5, 6].map((v) => (
+                              <option key={v} value={v}>
+                                {v}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                         <div className="col-6">
                           <label className="form-label small mb-1">Note /100</label>
