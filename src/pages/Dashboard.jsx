@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient'
 import { useAuth } from '../context/AuthContext'
 import { calculerMGP, getGrade, gradeColor, CREDITS_PAR_SEMESTRE } from '../bareme'
 import ResultatCard from '../components/ResultatCard'
+import ModeCalcul from '../components/ModeCalcul'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -159,6 +160,8 @@ export default function Dashboard() {
         resultat={resultat}
         creditsRequis={vue === 'annee' ? CREDITS_PAR_SEMESTRE * 2 : CREDITS_PAR_SEMESTRE}
       />
+
+      <ModeCalcul />
 
       {/* Formulaire d'ajout : le semestre se choisit ici */}
       <div className="card shadow-sm mb-4">
