@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Logo from '../components/Logo'
 
 export default function Register() {
   const { signUp } = useAuth()
@@ -40,6 +41,9 @@ export default function Register() {
     <div className="container">
       <div className="card shadow-sm auth-card">
         <div className="card-body p-4">
+          <div className="text-center mb-3">
+            <Logo size={56} />
+          </div>
           <h3 className="card-title text-center mb-4">Creer un compte</h3>
           {error && <div className="alert alert-danger py-2">{error}</div>}
           {message && <div className="alert alert-success py-2">{message}</div>}

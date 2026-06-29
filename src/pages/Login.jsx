@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Logo from '../components/Logo'
 
 export default function Login() {
   const { signIn } = useAuth()
@@ -27,6 +28,9 @@ export default function Login() {
     <div className="container">
       <div className="card shadow-sm auth-card">
         <div className="card-body p-4">
+          <div className="text-center mb-3">
+            <Logo size={56} />
+          </div>
           <h3 className="card-title text-center mb-4">Connexion</h3>
           {error && <div className="alert alert-danger py-2">{error}</div>}
           <form onSubmit={handleSubmit}>

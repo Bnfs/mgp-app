@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Logo from './Logo'
 
 export default function Navbar() {
   const { user, signOut } = useAuth()
@@ -14,7 +15,7 @@ export default function Navbar() {
     <nav className="navbar navbar-expand navbar-dark bg-primary mb-4 shadow-sm">
       <div className="container">
         <Link className="navbar-brand brand-logo" to="/">
-          🎓 MGP App
+          <Logo light />
         </Link>
         <div className="ms-auto d-flex align-items-center gap-3">
           {user && (
