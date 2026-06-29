@@ -1,5 +1,6 @@
-// ⬇️ Nom de l'ecole affiche a cote du logo. Modifie cette ligne si besoin.
-export const NOM_ECOLE = 'Université de Maroua'
+// ⬇️ Texte affiche sous "MGP" dans le logo. Modifie cette ligne si besoin
+//    (par ex. mets le nom de ton ecole quand tu l'auras).
+export const NOM_ECOLE = 'Calculateur de moyenne'
 
 // Logo provisoire : une toque de diplome (mortarboard) en SVG + le nom de l'ecole.
 // Remplacable plus tard par le vrai logo (voir <Logo /> et le composant image).
