@@ -9,6 +9,7 @@ create table if not exists public.matieres (
   nom         text not null,
   credit      numeric not null check (credit > 0),
   note        numeric not null check (note >= 0 and note <= 100),
+  semestre    smallint not null default 1 check (semestre in (1, 2)),
   created_at  timestamptz not null default now()
 );
 

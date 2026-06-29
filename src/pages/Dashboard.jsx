@@ -20,6 +20,9 @@ export default function Dashboard() {
   const [editId, setEditId] = useState(null)
   const [editVals, setEditVals] = useState({ nom: '', credit: '', note: '' })
 
+  // Vue active : 1 (Semestre 1), 2 (Semestre 2) ou 'annee' (les deux).
+  const [vue, setVue] = useState(1)
+
   // Charge les matieres de l'utilisateur au montage.
   useEffect(() => {
     let actif = true
@@ -40,7 +43,16 @@ export default function Dashboard() {
     }
   }, [])
 
-  const resultat = useMemo(() => calculerMGP(matieres), [matieres])
+  // Matieres affichees selon la vue (un semestre, ou toute l'annee).
+  const matieresAffichees = useMemo(
+    () => (vue === 'annee' ? matieres : matieres.filter((m) => m.semestre === vue)),
+    [matieres, vue],
+  )
+
+  const resultat = useMemo(
+    () => calculerMGP(matieresAffichees),
+    [matieresAffichees],
+  )
 
   async function ajouterMatiere(e) {
     e.preventDefault()
@@ -55,7 +67,7 @@ export default function Dashboard() {
     setSaving(true)
     const { data, error } = await supabase
       .from('matieres')
-      .insert({ nom: nom.trim(), credit: c, note: n, user_id: user.id })
+      .insert({ nom: nom.trim(), credit: c, note: n, user_id: user.id, semestre: vue })
       .select()
       .single()
     setSaving(false)
@@ -117,12 +129,35 @@ export default function Dashboard() {
 
       {error && <div className="alert alert-danger py-2">{error}</div>}
 
+      {/* Onglets : Semestre 1 / Semestre 2 / Annee */}
+      <ul className="nav nav-pills mb-3 gap-2">
+        {[
+          { key: 1, label: 'Semestre 1' },
+          { key: 2, label: 'Semestre 2' },
+          { key: 'annee', label: 'Année (S1 + S2)' },
+        ].map((t) => (
+          <li className="nav-item" key={t.key}>
+            <button
+              className={`nav-link ${vue === t.key ? 'active' : ''}`}
+              onClick={() => {
+                setVue(t.key)
+                setEditId(null)
+                setError('')
+              }}
+            >
+              {t.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+
       <ResultatCard resultat={resultat} />
 
-      {/* Formulaire d'ajout */}
+      {/* Formulaire d'ajout (masque dans la vue annuelle) */}
+      {vue !== 'annee' && (
       <div className="card shadow-sm mb-4">
         <div className="card-header bg-white fw-semibold">
-          ➕ Ajouter une matiere (UE)
+          ➕ Ajouter une matiere (UE) — Semestre {vue}
         </div>
         <div className="card-body">
           <form onSubmit={ajouterMatiere} className="row g-3 align-items-end">
@@ -168,20 +203,23 @@ export default function Dashboard() {
           </form>
         </div>
       </div>
+      )}
 
       {/* Tableau des matieres */}
       <div className="card shadow-sm">
         <div className="card-header bg-white fw-semibold">
-          📚 Mes matieres
+          📚 {vue === 'annee' ? 'Toutes mes matières (année)' : `Mes matières — Semestre ${vue}`}
         </div>
         <div className="card-body p-0">
           {loading ? (
             <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status" />
             </div>
-          ) : matieres.length === 0 ? (
+          ) : matieresAffichees.length === 0 ? (
             <p className="text-muted text-center my-4">
-              Aucune matiere pour l'instant. Ajoute ta premiere UE ci-dessus.
+              {vue === 'annee'
+                ? "Aucune matière pour l'instant."
+                : `Aucune matière en Semestre ${vue}. Ajoute ta première UE ci-dessus.`}
             </p>
           ) : (
             <div className="table-responsive d-none d-md-block">
@@ -189,6 +227,7 @@ export default function Dashboard() {
                 <thead className="table-light">
                   <tr>
                     <th>Matiere</th>
+                    {vue === 'annee' && <th className="text-center">Sem.</th>}
                     <th className="text-center">Credit</th>
                     <th className="text-center">Note /100</th>
                     <th className="text-center">Grade</th>
@@ -198,7 +237,7 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {matieres.map((m) => {
+                  {matieresAffichees.map((m) => {
                     const enEdition = editId === m.id
                     // En edition : on calcule le grade sur la valeur saisie en direct.
                     const g = getGrade(enEdition ? editVals.note : m.note)
@@ -215,6 +254,11 @@ export default function Dashboard() {
                               }
                             />
                           </td>
+                          {vue === 'annee' && (
+                            <td className="text-center">
+                              <span className="badge bg-secondary">S{m.semestre}</span>
+                            </td>
+                          )}
                           <td className="text-center">
                             <input
                               type="number"
@@ -272,6 +316,11 @@ export default function Dashboard() {
                     return (
                       <tr key={m.id}>
                         <td>{m.nom}</td>
+                        {vue === 'annee' && (
+                          <td className="text-center">
+                            <span className="badge bg-secondary">S{m.semestre}</span>
+                          </td>
+                        )}
                         <td className="text-center">{m.credit}</td>
                         <td className="text-center">{m.note}</td>
                         <td className="text-center">
@@ -308,9 +357,9 @@ export default function Dashboard() {
           )}
 
           {/* Vue en cartes : affichee uniquement sur mobile (< md) */}
-          {!loading && matieres.length > 0 && (
+          {!loading && matieresAffichees.length > 0 && (
             <div className="d-md-none p-3">
-              {matieres.map((m) => {
+              {matieresAffichees.map((m) => {
                 const enEdition = editId === m.id
                 const g = getGrade(enEdition ? editVals.note : m.note)
 
@@ -391,7 +440,12 @@ export default function Dashboard() {
                 return (
                   <div key={m.id} className="border rounded p-3 mb-3">
                     <div className="d-flex justify-content-between align-items-start mb-2">
-                      <h6 className="mb-0 fw-semibold">{m.nom}</h6>
+                      <h6 className="mb-0 fw-semibold">
+                        {m.nom}
+                        {vue === 'annee' && (
+                          <span className="badge bg-secondary ms-2">S{m.semestre}</span>
+                        )}
+                      </h6>
                       <span className={`badge bg-${gradeColor(g.points)} fs-6`}>
                         {g.grade}
                       </span>
