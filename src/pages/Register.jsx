@@ -8,6 +8,7 @@ export default function Register() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPwd, setShowPwd] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -61,14 +62,25 @@ export default function Register() {
             </div>
             <div className="mb-3">
               <label className="form-label">Mot de passe</label>
-              <input
-                type="password"
-                className="form-control"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-              />
+              <div className="input-group">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowPwd((v) => !v)}
+                  title={showPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  aria-label={showPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                >
+                  {showPwd ? '🙈' : '👁️'}
+                </button>
+              </div>
               <div className="form-text">Au moins 6 caracteres.</div>
             </div>
             <button
