@@ -57,44 +57,42 @@ export function calculerMGP(matieres) {
     return {
       totalCredits: 0,
       creditsValides: 0,
-      mgp4: 0,
+      mgp100: 0,
       mgp20: 0,
-      moyenne100: 0,
-      moyenne20: 0,
+      qualitePoints: 0,
+      cote: '-',
       mention: '-',
       details: [],
     }
   }
 
-  let sommePoints = 0 // somme(credit * points)
   let sommeNotes = 0 // somme(credit * note/100)
   let creditsValides = 0 // credits des UE validees (note >= SEUIL_VALIDATION)
 
   const details = valides.map((m) => {
     const g = getGrade(m.note)
     const credit = Number(m.credit)
-    sommePoints += credit * g.points
     sommeNotes += credit * Number(m.note)
     if (Number(m.note) >= SEUIL_VALIDATION) creditsValides += credit
     return { ...m, ...g }
   })
 
-  const mgp4 = sommePoints / totalCredits // sur 4
-  const mgp20 = mgp4 * 5 // conversion /4 -> /20
-  const moyenne100 = sommeNotes / totalCredits // moyenne ponderee /100
-  const moyenne20 = moyenne100 / 5 // /100 -> /20
+  // ETAPE 1 : moyenne ponderee des NOTES /100 (= la MGP du releve).
+  const mgp100 = sommeNotes / totalCredits // ex. 62.26
+  const mgp20 = mgp100 / 5 // la MGP exprimee sur 20
 
-  // Mention globale basee sur la MGP /4 (memes seuils que le bareme).
-  const mention = getGrade(mgp4 * 25).mention // mgp4*25 ramene /4 -> /100
+  // ETAPE 2 : on place CETTE moyenne dans le bareme -> cote + qualite de points.
+  // (Il ne faut SURTOUT pas faire la moyenne des points : ce serait faux.)
+  const g = getGrade(mgp100)
 
   return {
     totalCredits,
     creditsValides,
-    mgp4: round(mgp4),
-    mgp20: round(mgp20),
-    moyenne100: round(moyenne100),
-    moyenne20: round(moyenne20),
-    mention,
+    mgp100: round(mgp100), // 62.26
+    mgp20: round(mgp20), // 12.45
+    qualitePoints: g.points, // 2.70 (sur 4)
+    cote: g.grade, // B-
+    mention: g.mention, // Assez Bien
     details,
   }
 }

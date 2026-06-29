@@ -19,23 +19,28 @@ export default function ModeCalcul() {
 
       {ouvert && (
         <div className="card-body">
-          <h6 className="fw-semibold">1. La formule</h6>
-          <p className="mb-1">
-            Chaque note (/100) est convertie en <strong>points</strong> (0 à 4)
-            selon le barème ci-dessous, puis :
+          <h6 className="fw-semibold">1. La formule (dans le bon ordre)</h6>
+          <ol className="mb-3">
+            <li>
+              On fait la <strong>moyenne des notes /100, pondérée par les
+              crédits</strong> :<br />
+              <code>MGP = Σ(note × crédit) ÷ Σ(crédits)</code>
+            </li>
+            <li>
+              On l'exprime sur 20 : <code>MGP /20 = MGP /100 ÷ 5</code>
+            </li>
+            <li>
+              On place <strong>cette moyenne</strong> dans le barème ci-dessous
+              pour obtenir la <strong>côte</strong> et la{' '}
+              <strong>qualité de points</strong> (/4).
+            </li>
+          </ol>
+          <p className="alert alert-warning py-2 small mb-3">
+            ⚠️ <strong>À ne pas faire :</strong> calculer la moyenne des qualités
+            de points directement donnerait un résultat <em>faux</em>. On fait
+            toujours la moyenne des <strong>notes</strong> d'abord, puis la
+            conversion en points.
           </p>
-          <ul className="mb-3">
-            <li>
-              <code>MGP /4 = Σ(crédit × points) ÷ Σ(crédits)</code>
-            </li>
-            <li>
-              <code>MGP /20 = MGP/4 × 5</code>
-            </li>
-            <li>
-              La <strong>Moyenne /20</strong> est la moyenne pondérée de tes
-              notes exactes (info indicative).
-            </li>
-          </ul>
 
           <h6 className="fw-semibold">2. Le barème (note /100 → points)</h6>
           <div className="table-responsive">

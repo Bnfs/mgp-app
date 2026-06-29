@@ -1,10 +1,10 @@
 import { gradeColor } from '../bareme'
 
-// Affiche le bilan : MGP /4, MGP /20, moyenne, mention.
+// Affiche le bilan facon releve : MGP /100, MGP /20, qualite de points, cote, mention.
 export default function ResultatCard({ resultat, creditsRequis }) {
-  const { mgp4, mgp20, moyenne20, mention, totalCredits, creditsValides } =
+  const { mgp100, mgp20, qualitePoints, cote, mention, totalCredits, creditsValides } =
     resultat
-  const couleur = gradeColor(mgp4)
+  const couleur = gradeColor(qualitePoints)
 
   return (
     <div className="card shadow-sm mb-4">
@@ -13,16 +13,16 @@ export default function ResultatCard({ resultat, creditsRequis }) {
         <div className="row text-center g-3">
           <div
             className="col-6 col-md-3"
-            title="Note officielle LMD, calculee sur les grades (points de 0 a 4 selon le bareme). Sur 4."
+            title="Moyenne Generale Ponderee = somme(note x credits) / total credits. Sur 100."
           >
-            <div className={`result-number text-${couleur}`}>{mgp4}</div>
+            <div className={`result-number text-${couleur}`}>{mgp100}</div>
             <div className="text-muted small">
-              MGP / 4 <span className="text-info">ⓘ</span>
+              MGP / 100 <span className="text-info">ⓘ</span>
             </div>
           </div>
           <div
             className="col-6 col-md-3"
-            title="La MGP convertie sur 20 (MGP/4 x 5). C'est ta note officielle exprimee sur 20."
+            title="La MGP exprimee sur 20 (MGP/100 divisee par 5)."
           >
             <div className={`result-number text-${couleur}`}>{mgp20}</div>
             <div className="text-muted small">
@@ -31,11 +31,14 @@ export default function ResultatCard({ resultat, creditsRequis }) {
           </div>
           <div
             className="col-6 col-md-3"
-            title="Moyenne classique de tes notes exactes (ponderee par les credits), convertie sur 20. Indicatif uniquement."
+            title="Cote et qualite de points : on place la MGP/100 dans le bareme. Sur 4."
           >
-            <div className="result-number text-secondary">{moyenne20}</div>
+            <div className={`result-number text-${couleur}`}>
+              {qualitePoints.toFixed(2)}
+            </div>
             <div className="text-muted small">
-              Moyenne / 20 <span className="text-info">ⓘ</span>
+              Points / 4 ·{' '}
+              <span className={`badge bg-${couleur}`}>{cote}</span>
             </div>
           </div>
           <div className="col-6 col-md-3" title="Appreciation correspondant a ta MGP.">
@@ -45,11 +48,11 @@ export default function ResultatCard({ resultat, creditsRequis }) {
         </div>
 
         <div className="alert alert-light border small mt-3 mb-0">
-          <strong>ⓘ Différence ?</strong> La <strong>MGP</strong> est ta note
-          officielle : elle se base sur les <em>grades</em> (paliers du barème,
-          ex. toute note ≥ 80 = 4.00). La <strong>Moyenne / 20</strong> est la
-          moyenne de tes <em>notes exactes</em> — indicative seulement.
-          <em> Survole chaque chiffre pour le détail.</em>
+          <strong>ⓘ Méthode :</strong> la <strong>MGP</strong> est la moyenne de
+          tes notes <em>pondérée par les crédits</em> (ex. {mgp100}/100). On
+          place ensuite cette moyenne dans le barème pour obtenir la{' '}
+          <strong>côte</strong> ({cote}) et la <strong>qualité de points</strong>{' '}
+          ({qualitePoints.toFixed(2)}/4).
         </div>
 
         <hr />
