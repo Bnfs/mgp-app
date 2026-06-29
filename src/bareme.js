@@ -36,6 +36,9 @@ export function gradeColor(points) {
   return 'danger'
 }
 
+// Note minimale (sur 100) pour valider le credit d'une UE (grade C ou mieux).
+export const SEUIL_VALIDATION = 50
+
 // =============================================================
 //  Calcul de la MGP
 //  matieres = [{ nom, credit, note }]  (note sur 100)
@@ -62,14 +65,14 @@ export function calculerMGP(matieres) {
 
   let sommePoints = 0 // somme(credit * points)
   let sommeNotes = 0 // somme(credit * note/100)
-  let creditsValides = 0 // credits des UE validees (points > 0)
+  let creditsValides = 0 // credits des UE validees (note >= SEUIL_VALIDATION)
 
   const details = valides.map((m) => {
     const g = getGrade(m.note)
     const credit = Number(m.credit)
     sommePoints += credit * g.points
     sommeNotes += credit * Number(m.note)
-    if (g.points > 0) creditsValides += credit
+    if (Number(m.note) >= SEUIL_VALIDATION) creditsValides += credit
     return { ...m, ...g }
   })
 
