@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { useAuth } from '../context/AuthContext'
-import { calculerMGP, getGrade, gradeColor } from '../bareme'
+import { calculerMGP, getGrade, gradeColor, CREDITS_PAR_SEMESTRE } from '../bareme'
 import ResultatCard from '../components/ResultatCard'
 
 export default function Dashboard() {
@@ -155,7 +155,10 @@ export default function Dashboard() {
         ))}
       </ul>
 
-      <ResultatCard resultat={resultat} />
+      <ResultatCard
+        resultat={resultat}
+        creditsRequis={vue === 'annee' ? CREDITS_PAR_SEMESTRE * 2 : CREDITS_PAR_SEMESTRE}
+      />
 
       {/* Formulaire d'ajout : le semestre se choisit ici */}
       <div className="card shadow-sm mb-4">

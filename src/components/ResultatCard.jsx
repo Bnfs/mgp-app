@@ -1,7 +1,7 @@
 import { gradeColor } from '../bareme'
 
 // Affiche le bilan : MGP /4, MGP /20, moyenne, mention.
-export default function ResultatCard({ resultat }) {
+export default function ResultatCard({ resultat, creditsRequis }) {
   const { mgp4, mgp20, moyenne20, mention, totalCredits, creditsValides } =
     resultat
   const couleur = gradeColor(mgp4)
@@ -53,8 +53,9 @@ export default function ResultatCard({ resultat }) {
         </div>
 
         <hr />
-        <div className="d-flex justify-content-between small text-muted">
-          <span>Total credits : {totalCredits}</span>
+        <div className="d-flex justify-content-between flex-wrap gap-2 small text-muted">
+          <span>Credits requis : {creditsRequis}</span>
+          <span>Total credits saisis : {totalCredits}</span>
           <span>Credits valides : {creditsValides}</span>
         </div>
       </div>

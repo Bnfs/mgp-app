@@ -39,6 +39,9 @@ export function gradeColor(points) {
 // Note minimale (sur 100) pour valider le credit d'une UE (grade C ou mieux).
 export const SEUIL_VALIDATION = 50
 
+// Nombre de credits requis par semestre (norme LMD).
+export const CREDITS_PAR_SEMESTRE = 30
+
 // =============================================================
 //  Calcul de la MGP
 //  matieres = [{ nom, credit, note }]  (note sur 100)
