@@ -7,8 +7,8 @@
 // Chaque entree : note minimale (incluse) -> grade, points (/4), mention.
 // L'ambiguite du 34 (E vs D-) est resolue ici : 34+ => D-, 30 a 33 => E.
 export const BAREME = [
-  { min: 80, grade: 'A+', points: 4.0, mention: 'Excellent' },
-  { min: 75, grade: 'A-', points: 3.7, mention: 'Tres Bien' },
+  { min: 80, grade: 'A', points: 4.0, mention: 'Tres Bien' },
+  { min: 75, grade: 'A-', points: 3.7, mention: 'Bien' },
   { min: 70, grade: 'B+', points: 3.3, mention: 'Bien' },
   { min: 65, grade: 'B', points: 3.0, mention: 'Assez Bien' },
   { min: 60, grade: 'B-', points: 2.7, mention: 'Assez Bien' },
