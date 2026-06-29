@@ -16,6 +16,10 @@ export default function Dashboard() {
   const [credit, setCredit] = useState('')
   const [note, setNote] = useState('')
 
+  // Edition d'une matiere existante : id en cours + valeurs editees.
+  const [editId, setEditId] = useState(null)
+  const [editVals, setEditVals] = useState({ nom: '', credit: '', note: '' })
+
   // Charge les matieres de l'utilisateur au montage.
   useEffect(() => {
     let actif = true
@@ -61,6 +65,40 @@ export default function Dashboard() {
     setNom('')
     setCredit('')
     setNote('')
+  }
+
+  function commencerEdition(m) {
+    setError('')
+    setEditId(m.id)
+    setEditVals({ nom: m.nom, credit: String(m.credit), note: String(m.note) })
+  }
+
+  function annulerEdition() {
+    setEditId(null)
+    setError('')
+  }
+
+  async function enregistrerEdition(id) {
+    setError('')
+    const c = Number(editVals.credit)
+    const n = Number(editVals.note)
+    if (!editVals.nom.trim()) return setError('Donne un nom a la matiere.')
+    if (!(c > 0)) return setError('Le credit doit etre superieur a 0.')
+    if (editVals.note === '' || n < 0 || n > 100)
+      return setError('La note doit etre comprise entre 0 et 100.')
+
+    setSaving(true)
+    const { data, error } = await supabase
+      .from('matieres')
+      .update({ nom: editVals.nom.trim(), credit: c, note: n })
+      .eq('id', id)
+      .select()
+      .single()
+    setSaving(false)
+    if (error) return setError(error.message)
+
+    setMatieres((prev) => prev.map((m) => (m.id === id ? data : m)))
+    setEditId(null)
   }
 
   async function supprimerMatiere(id) {
@@ -161,7 +199,76 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {matieres.map((m) => {
-                    const g = getGrade(m.note)
+                    const enEdition = editId === m.id
+                    // En edition : on calcule le grade sur la valeur saisie en direct.
+                    const g = getGrade(enEdition ? editVals.note : m.note)
+
+                    if (enEdition) {
+                      return (
+                        <tr key={m.id} className="table-warning">
+                          <td>
+                            <input
+                              className="form-control form-control-sm"
+                              value={editVals.nom}
+                              onChange={(e) =>
+                                setEditVals((v) => ({ ...v, nom: e.target.value }))
+                              }
+                            />
+                          </td>
+                          <td className="text-center">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.5"
+                              className="form-control form-control-sm text-center"
+                              value={editVals.credit}
+                              onChange={(e) =>
+                                setEditVals((v) => ({ ...v, credit: e.target.value }))
+                              }
+                            />
+                          </td>
+                          <td className="text-center">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              className="form-control form-control-sm text-center"
+                              value={editVals.note}
+                              onChange={(e) =>
+                                setEditVals((v) => ({ ...v, note: e.target.value }))
+                              }
+                            />
+                          </td>
+                          <td className="text-center">
+                            <span className={`badge bg-${gradeColor(g.points)}`}>
+                              {g.grade}
+                            </span>
+                          </td>
+                          <td className="text-center">{g.points.toFixed(2)}</td>
+                          <td className="text-center small">{g.mention}</td>
+                          <td className="text-end table-actions text-nowrap">
+                            <button
+                              className="btn btn-success me-1"
+                              onClick={() => enregistrerEdition(m.id)}
+                              disabled={saving}
+                              title="Enregistrer"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              className="btn btn-outline-secondary"
+                              onClick={annulerEdition}
+                              disabled={saving}
+                              title="Annuler"
+                            >
+                              ↩
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    }
+
                     return (
                       <tr key={m.id}>
                         <td>{m.nom}</td>
@@ -174,10 +281,19 @@ export default function Dashboard() {
                         </td>
                         <td className="text-center">{g.points.toFixed(2)}</td>
                         <td className="text-center small">{g.mention}</td>
-                        <td className="text-end table-actions">
+                        <td className="text-end table-actions text-nowrap">
+                          <button
+                            className="btn btn-outline-primary me-1"
+                            onClick={() => commencerEdition(m)}
+                            disabled={editId !== null}
+                            title="Modifier"
+                          >
+                            ✎
+                          </button>
                           <button
                             className="btn btn-outline-danger"
                             onClick={() => supprimerMatiere(m.id)}
+                            disabled={editId !== null}
                             title="Supprimer"
                           >
                             ✕
